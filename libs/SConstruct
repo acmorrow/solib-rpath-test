@@ -1,0 +1,26 @@
+AddOption('--prefix',
+          dest='prefix',
+          type='string',
+          nargs=1,
+          action='store',
+          metavar='DIR',
+          help='installation prefix')
+
+AddOption('--use-rpath-in-libs',
+          dest='use_rpath_in_libs',
+          action='store_true',
+          default=False,
+          help='set rpath in libraries')
+
+env = Environment(
+    PREFIX = GetOption('prefix'))
+
+use_rpath_in_libs = GetOption('use_rpath_in_libs')
+
+env.SConscript(
+    'src/SConscript',
+    variant_dir='build/src',
+    exports=[
+        'env',
+        'use_rpath_in_libs',
+    ])

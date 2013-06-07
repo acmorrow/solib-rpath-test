@@ -1,0 +1,24 @@
+Import('env')
+
+client_env = env.Clone()
+
+client_env.AppendUnique(
+    CPPPATH=["$PREFIX/include"],
+    LIBPATH=["$PREFIX/lib"],
+    LIBS=['bar'],
+)
+
+client_sources = [
+    'main.cpp'
+]
+
+client = client_env.Program(
+    target='client',
+    source=client_sources)
+
+client_install = client_env.Install(
+    "$PREFIX/bin", client)
+
+client_env.Alias(
+    'install',
+    [client_install])

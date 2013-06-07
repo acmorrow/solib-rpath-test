@@ -1,0 +1,60 @@
+Import('env use_rpath_in_libs')
+
+lib_env = env.Clone()
+
+lib_env.AppendUnique(
+    LIBPATH=["#/build/src"],
+    SHLINKFLAGS=["-shared", "-Wl,-z,defs"],
+)
+
+if use_rpath_in_libs:
+    lib_env.AppendUnique(
+        RPATH=["$PREFIX/lib"],
+    )
+
+libfoo_sources = [
+    'foo.cpp',
+]
+
+libfoo_headers = [
+    lib_env.File('foo.hpp')
+]
+
+libfoo = lib_env.SharedLibrary(
+    target='foo',
+    source=libfoo_sources,
+)
+
+libfoo_install = lib_env.Install(
+    "$PREFIX/lib", libfoo)
+
+libfoo_dev_install = lib_env.Install(
+    "$PREFIX/include", libfoo_headers)
+
+libbar_sources = [
+    'bar.cpp',
+]
+
+libbar_headers = [
+    lib_env.File('bar.hpp')
+]
+
+libbar = lib_env.SharedLibrary(
+    target='bar',
+    source=libbar_sources,
+    LIBS=['foo']
+)
+
+libbar_install = lib_env.Install(
+    "$PREFIX/lib", libbar)
+
+libbar_dev_install = lib_env.Install(
+    "$PREFIX/include", libbar_headers)
+
+lib_env.Alias(
+    'install',
+    [
+        libfoo_install, libfoo_dev_install,
+        libbar_install, libbar_dev_install,
+    ]
+)
